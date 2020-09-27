@@ -2,5 +2,8 @@
   "private": true,
   "dependencies": {
     "zenn-cli": "^0.1.32"
+  },
+  "scripts": {
+    "start": "zenn preview"
   }
 }
