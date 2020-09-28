@@ -11,6 +11,7 @@ published: true
 ### 先にまとめ
 
 - エミュレーターがあればだいたいローカルで開発できるぞ
+- Firebase コンソールみたいなウェブ UI で閲覧、編集もできる
 - `npx firebase init` でインストール
 - `npx firebase emulators:start` で起動
 - `app.firestore().settings({ host: "localhost:8080" })` でアプリから接続
@@ -24,20 +25,20 @@ Firestore 以外の Firebase の機能もあるんだけど、本稿では主に
 
 ### エミュレーターでできること
 
-- 複数人で DB を使いまわさなくて済む
+- 本物 Firestore のデータを気にしなくて済む
+- 複数人で DB を使いまわすこともなくなる
 - Security rules をデプロイする前に試せる
-- 動作確認用のスナップショットから始められる
-- DB を利用する試験を書ける
+- 動作確認用にスナップショットから再開できる
+- Security rules 等の試験を書ける
 - 試験は完全ローカルでできるし CI でも動く
-- Firebase コンソールみたいなウェブ UI もある
 
 ### エミュレーターでできないこと
 
 - Firebase 全体のエミュレーターでは**ない**ので、完全ローカルにはならない
-- ログイン (Authentication) のエミュレーターがない
+- 特にログイン (Authentication) のエミュレーターがない
   - アプリでは、別途本物の Firebase プロジェクトが必要
   - 試験では、ライブラリーで擬似ログインできる
-- 実際の Firebase の代わりとして利用してアプリ公開
+- 実際の Firebase の代わりとして利用してアプリ公開なんて無理
 
 ## インストール
 
@@ -84,9 +85,8 @@ $ npx firebase init
 7. "Would you like to enable the Emulator UI?"
 8. "Which port do you want to use for the Emulator UI"
 9. "Would you like to download the emulators now?"
-   - `y`
-   - ダウンロードが始まります
-   - 間違えて `N` にしてしまったら気にせず `init` し直してください。ダウンロードだけなら `npx firebase setup:emulators:firestore` でもできます
+   - `y` でダウンロード開始
+   - `N` にしてしまっても気にせず続けて、次に `init` し直してください。ダウンロードだけなら `npx firebase setup:emulators:firestore` でもできます
 10. "Firebase initialization complete!"
 
 おつかれさまでした。
@@ -214,9 +214,9 @@ $ npx firebase emulators:start --import=path/to/export
 
 ### 自動保存
 
-エミュレーター終了時に自動で保存というのもできます。アプリを動かしながら試行錯誤するときに便利。
+`--export-on-exit` オプションを与えるとエミュレーター終了時に自動で保存というのもできます。アプリを動かしながら試行錯誤するときに便利。
 
-`--export-on-exit` オプションを与えます。保存先ディレクトリーを指定できるけど、それを省略して `--import` と併用すると自動的に同じ場所へ書き込むのでその方が使い勝手が良いことでしょう。
+保存先ディレクトリーを指定できるけど、それを省略して `--import` と併用すると自動的に同じ場所へ書き込みます。この方が使い勝手が良いことでしょう。
 
 ```console
 $ npx firebase emulators:start --import=path/to/export --export-on-exit
