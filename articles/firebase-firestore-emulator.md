@@ -315,9 +315,19 @@ Error: An unexpected error has occurred.
 
 ### Java が必要
 
-エミュレーターの実行に Java が必要らしいです。
+エミュレーターの実行に Java が必要です。インストールされていないと起動時にこけます。
 
-うちの環境には入ってたので未確認だけどなんか動かなかったらそこら辺確認してみてください。
+```
+⚠  firestore: Fatal error occurred:
+   Firestore Emulator has exited because java is not installed, you can install it from https://openjdk.java.net/install/,
+   stopping all running emulators
+```
+
+手元の Ubuntu (WSL) の場合。
+
+```console
+$ sudo apt install default-jdk-headless -y
+```
 
 ### 制限
 
