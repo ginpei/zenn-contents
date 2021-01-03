@@ -50,7 +50,7 @@ Firebase の諸機能と同様 `firebase init` からインストールできま
 
 `firebase-tools` をインストールしていない場合、準備してください。まあ Firebase の話してるのでもう入ってると思うけど。
 
-```console
+```bash
 $ npm install -D firebase-tools
 ```
 
@@ -58,13 +58,13 @@ $ npm install -D firebase-tools
 
 エラーなくバージョンが表示されれば成功。
 
-```console
+```bash
 $ npx firebase --version
 ```
 
 ### エミュレーターのインストール
 
-```console
+```bash
 $ npx firebase init
 ```
 
@@ -95,7 +95,7 @@ $ npx firebase init
 
 起動したままターミナルを占有するので別タブとか用意しといてください。（Windows なら cmd.exe じゃなくて MS 公式の [Windows Terminal](https://www.microsoft.com/ja-jp/p/windows-terminal/9n0dx20hk701?activetab=pivot:overviewtab) 使いましょう。）
 
-```console
+```bash
 $ npm firebase emulators:start
 
 …
@@ -120,7 +120,7 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 
 `exec` にすると指定のコマンドをエミュレーターと共に実行し、終了し次第エミュレーターも終わってくれます。
 
-```console
+```bash
 $ npx firebase emulators:exec "npm start"
 ```
 
@@ -196,7 +196,7 @@ export const fsRoot = app.firestore().collection("secure-notes").doc("v1");
 
 エミュレーターが起動している状態で、別のターミナルからこう↓。
 
-```console
+```bash
 $ npx firebase emulators:export path/to/export
 ```
 
@@ -206,7 +206,7 @@ $ npx firebase emulators:export path/to/export
 
 エミュレーターを起動する際に `--import` オプションを加え、エクスポートしたディレクトリーを指定します。
 
-```console
+```bash
 $ npx firebase emulators:start --import=path/to/export
 ```
 
@@ -218,7 +218,7 @@ $ npx firebase emulators:start --import=path/to/export
 
 保存先ディレクトリーを指定できるけど、それを省略して `--import` と併用すると自動的に同じ場所へ書き込みます。この方が使い勝手が良いことでしょう。
 
-```console
+```bash
 $ npx firebase emulators:start --import=path/to/export --export-on-exit
 ```
 
@@ -269,7 +269,7 @@ Error: Could not start Firestore Emulator, port taken.
 
 スッ……
 
-```console
+```bash
 $ npx firebase emulators:start --import=path/to/export
 i  emulators: Starting emulators: firestore
 i  emulators: Shutting down emulators.
@@ -325,7 +325,7 @@ Error: An unexpected error has occurred.
 
 手元の Ubuntu (WSL) の場合。
 
-```console
+```bash
 $ sudo apt install default-jdk-headless -y
 ```
 
@@ -340,7 +340,7 @@ $ sudo apt install default-jdk-headless -y
 
 抜粋します。情報が少ない……。
 
-```console
+```bash
 $ npx firebase --help
 …
 Commands:
@@ -354,7 +354,7 @@ Commands:
   setup:emulators:pubsub                                    downloads the pubsub emulator
 ```
 
-```console
+```bash
 $ npx firebase emulators
 Error: emulators is not a Firebase command
 
