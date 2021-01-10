@@ -141,7 +141,7 @@ firebase.firestore().useEmulator("localhost", 8080);
 ### 具体例
 
 - [ginpei/firebase-emu-example](https://github.com/ginpei/firebase-emu-example)
-  - [public/scripts.js](https://github.com/ginpei/firebase-emu-example/blob/bb1f2af9c8e008733b8911a332f9030103b75016/public/scripts.js#L18-L24)
+  - [public/scripts.js](https://github.com/ginpei/firebase-emu-example/blob/bb1f2af9c8e008733b8911a332f9030103b75016/public/scripts.js#L18-L32)
 
 ```js
 function initializeFirebase() {
