@@ -14,8 +14,9 @@ published: true
 - Firebase コンソールみたいなウェブ UI で閲覧、編集もできる
 - `npx firebase init` でインストール
 - `npx firebase emulators:start` で起動
-- `app.firestore().settings({ host: "localhost:8080" })` でアプリから接続
+- `app.firestore().useEmulator("localhost", 8080);` でアプリから接続
 - 公式：[Firebase Local Emulator Suite の概要](https://firebase.google.com/docs/emulator-suite)
+- 例：[ginpei/firebase-emu-example](https://github.com/ginpei/firebase-emu-example)
 
 Firestore 以外の Firebase の機能もあるんだけど、本稿では主に Firestore についてお話しします。
 
@@ -35,10 +36,9 @@ Firestore 以外の Firebase の機能もあるんだけど、本稿では主に
 ### エミュレーターでできないこと
 
 - Firebase 全体のエミュレーターでは**ない**ので、完全ローカルにはならない
-- 特にログイン (Authentication) のエミュレーターがない
-  - アプリでは、別途本物の Firebase プロジェクトが必要
-  - 試験では、ライブラリーで擬似ログインできる
-- 実際の Firebase の代わりとして利用してアプリ公開なんて無理
+  - 例えば Storage のエミュレーターがない
+  - そのうち増えるかも？（この記事の初版では Auth はなかった）
+- 実際の Firebase の代わりとして利用してアプリ公開は無理
 
 ## インストール
 
@@ -80,7 +80,7 @@ $ npx firebase init
 4. "What file should be used for Firestore indexes?"
 5. "Which Firebase emulators do you want to set up?"
    - **Firestore** を選択
-   - 他にも必要なものあれば
+   - 他にも Authentication など必要なものあれば
 6. "Which port do you want to use for the firestore emulator?"
 7. "Would you like to enable the Emulator UI?"
 8. "Which port do you want to use for the Emulator UI"
@@ -130,48 +130,35 @@ $ npx firebase emulators:exec "npm start"
 
 ## アプリをエミュレーターへ接続
 
-JavaScript の場合はこう。[公式ドキュメント](https://firebase.google.com/docs/emulator-suite/connect_firestore#android_ios_and_web_sdks)には Android (Java) と iOS (Swift) の例も載ってます。
+JavaScript で Firestore をエミュレーターへ繋ぐには、こう。
 
 ```javascript
-const isEmulating = location.hostname === "localhost";
-if (isEmulating) {
-  firebase.firestore().settings({
-    host: "localhost:8080",
-    ssl: false,
-  });
-}
+firebase.firestore().useEmulator("localhost", 8080);
 ```
 
-`isEmulating` は何でも良くて、自分の場合は環境変数 `process.env.REACT_APP_FB_EMU` を見るようにしました。（[CRA](https://create-react-app.dev/) では `REACT_APP_*` はクライアント側へ露出します。）
+ちょっと前までは `firestore().settings()` で設定してたんだけど、今は `useEmulator()` 使うのが良いみたいです。
 
 ### 具体例
 
-- [ginpei/firestore-rules-example](https://github.com/ginpei/firestore-rules-example)
-  - [src/middleware/fb.ts](https://github.com/ginpei/firestore-rules-example/blob/master/src/middleware/fb.ts)
+- [ginpei/firebase-emu-example](https://github.com/ginpei/firebase-emu-example)
+  - [public/scripts.js](https://github.com/ginpei/firebase-emu-example/blob/bb1f2af9c8e008733b8911a332f9030103b75016/public/scripts.js#L18-L24)
 
-```ts
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/firestore";
-
-const app = firebase.initializeApp({
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
-});
-
-if (process.env.REACT_APP_FB_EMU) {
-  // eslint-disable-next-line no-console
-  console.log("[Firestore] Using local emu");
-  app.firestore().settings({
-    host: "localhost:8080",
-    ssl: false,
+```js
+function initializeFirebase() {
+  firebase.initializeApp({
+    apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    appId: "x-local-emu",
+    authDomain: "x-local-emu.firebaseapp.com",
+    projectId: "x-local-emu",
   });
-}
 
-export const fb = app;
-export const auth = app.auth();
-export const fsRoot = app.firestore().collection("secure-notes").doc("v1");
+  const isEmulating = window.location.hostname === "localhost";
+  if (isEmulating) {
+    firebase.auth().useEmulator("http://localhost:9099");
+    firebase.functions().useEmulator("localhost", 5001);
+    firebase.firestore().useEmulator("localhost", 8080);
+  }
+}
 ```
 
 ## ウェブ UI
@@ -238,6 +225,92 @@ Firestore やってると `firestore.rules` を編集して Security rules を�
 
 ![ルール確認に便利そうな設定画面のスクリーンショット](https://storage.googleapis.com/zenn-user-upload/tjqawl03zm98u36n0yapk6qkfjeh)
 
+## Firestore 以外のエミュレーター
+
+以下がその一覧です。（firebase v8.2.1 現在）
+
+- Authentication
+- Cloud Functions
+- Firestore
+- Realtime Database
+- Hosting
+- Cloud Pub/Sub
+
+Hosting は開発サーバーとしても使える。自動再読み込みみたいなのはないけど。
+
+:::details 全部利用する設定にすると `firebase.json` はこんな感じ。
+
+```json
+{
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "database": {
+      "port": 9000
+    },
+    "hosting": {
+      "port": 5000
+    },
+    "pubsub": {
+      "port": 8085
+    },
+    "ui": {
+      "enabled": true
+    }
+  },
+  "remoteconfig": {
+    "template": "remoteconfig.template.json"
+  }
+}
+```
+:::
+
+エミュレーターへ接続するコードはこうです。Authentication だけインターフェイス違う。
+
+```js
+firebase.auth().useEmulator("http://localhost:9099");
+firebase.functions().useEmulator("localhost", 5001);
+firebase.firestore().useEmulator("localhost", 8080);
+firebase.database().useEmulator("localhost", 9000);
+```
+
+Functions の URL はこうなってました。
+
+```
+http://localhost:5001/PROJECT_ID/us-central1/FUNCTION_NAME
+```
+
+### Authentication エミュレーター
+
+メールとパスワードのもののみ設定可能みたい。本物は Google アカウントでログインしたりできる。
+
+名前や画像 URL などは設定可能。
+
 ## その他
 
 ### ログファイル
@@ -246,8 +319,10 @@ Firestore やってると `firestore.rules` を編集して Security rules を�
 
 ```
 # Firebase
+database-debug.log
 firebase-debug.log
 firestore-debug.log
+pubsub-debug.log
 ui-debug.log
 ```
 
