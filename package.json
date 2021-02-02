@@ -3,7 +3,7 @@
   "dependencies": {
     "commitizen": "^4.2.1",
     "cz-conventional-changelog": "^3.3.0",
-    "zenn-cli": "^0.1.32"
+    "zenn-cli": "^0.1.72"
   },
   "scripts": {
     "start": "zenn preview"
