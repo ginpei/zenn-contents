@@ -2,13 +2,13 @@
 title: "Agora で偽 Clubhouse を作る"
 emoji: "🍣"
 type: "tech" # tech: 技術記事 / idea: アイデア
-topics: ["agora", "voiceChat", "streaming"]
+topics: ["agora", "webrtc", "javascript"]
 published: false
 ---
 
-Clubhouse に招待されないので自分で作ってみた、みたいな感じです。まあ別に招待してくれなくていいんですけどね、大して興味ないしそれにほらどうせ Android 使ってるしね。あのぶどうは酸っぱいや^[[すっぱい葡萄 - Wikipedia](https://ja.wikipedia.org/wiki/%E3%81%99%E3%81%A3%E3%81%B1%E3%81%84%E8%91%A1%E8%90%84)]。
+**Clubhouse に招待されないので自分で作ってみた**、みたいな感じです。まあ別に招待してくれなくていいんですけどね、大して興味ないしそのうちオープンになるだろうしそれにほらどうせ Android 使ってるしあのぶどうは酸っぱいし^[[すっぱい葡萄 - Wikipedia](https://ja.wikipedia.org/wiki/%E3%81%99%E3%81%A3%E3%81%B1%E3%81%84%E8%91%A1%E8%90%84)]。
 
-頑張って調べて書いてる感じなので何かあれば PR とかお願いします。
+初挑戦で頑張って調べて書いてる感じなので何かあれば PR とかお願いします。
 
 ## 先にまとめ
 
@@ -26,9 +26,9 @@ Clubhouse に招待されないので自分で作ってみた、みたいな感�
 
 - https://www.agora.io/en/
 
-音声や映像のストリーミングを行う API を提供するサービス。従量課金制だけど[音声 10,000 分/月の無料枠](https://www.agora.io/en/pricing/)があり、クレジットカード登録等なしで気軽に試せました。ちなみに 10,000 分 ≒ 7日です。
+音声や映像のストリーミングを行う API を提供するサービス。従量課金制だけど[音声 10,000 分/月の無料枠](https://www.agora.io/en/pricing/)があり、クレジットカード登録等なしで気軽に試せました。ちなみに 10,000 分 ≒ 7日です。豪勢だ。
 
-ウェブ版の SDK は CDN か `npm install agora-rtc-sdk-ng` でインストール。（TypeScript で使える型情報も提供されてて嬉しい。）　他にも iOS, Android はもちろん Unity や Flutter、React Native等々幅広く提供されてます。
+ウェブ版の SDK は CDN か `npm install agora-rtc-sdk-ng` でインストール。TypeScript で使える型情報もきっちり提供されていて嬉しい。他にも iOS、Android はもちろん Unity や Flutter、React Native等々幅広く提供されてます。
 
 そして噂の Clubhouse はこれを使って運営されているらしい。
 
@@ -53,6 +53,8 @@ https://zenn.dev/voluntas/scraps/9403b803320d6f
 ![デモのスクリーンショット。開始ボタンや参加者の ID 一覧など](https://storage.googleapis.com/zenn-user-upload/ssyjh3kx1rbq4i7bjdsczgpw162w)
 
 ## 作ってみる
+
+ウェブ版（クライアント側 JavaScript）です。
 
 ### アカウント作成
 
@@ -227,7 +229,7 @@ async function onUnpublishClick() {
 
 ちなみに音声トラックは `publish()` で複数登録できて、`unpublish()` の引数で指定して任意のものを閉じることができるようです。また省略すると全て閉じるとのこと。`leave()` との関係はどんな感じなんだろ？
 
-まあともかくこれで自身の操作はできるようになりました。ここからは他の人の音声を取得してゆきます。
+まあともかくこれで自身の操作はできるようになりました。ここからは他の人の音声を取得していきます。
 
 ### 誰か join した
 
@@ -270,7 +272,7 @@ async function onAgoraUserLeft(user, reason) {
 - `"ServerTimeOut"` - オフラインになった
 - `"BecomeAudience"` - *role* が audience になった
 
-[*role*](https://docs.agora.io/en/Voice/API%20Reference/web_ng/globals.html#clientrole) は本稿では扱っていません。（ごめんなさい、初めて使ってます。）
+[*role*](https://docs.agora.io/en/Voice/API%20Reference/web_ng/globals.html#clientrole) は本稿では扱っていません。
 
 ### 誰か publish した
 
@@ -360,7 +362,9 @@ async function onAgoraUserUnpublished(user, mediaType) {
 
 ## おしまい
 
-これで Clubhouse クローンが作れるぜ！　君だけの最強の Clubhouse を作ろう！
+これで Clubhouse クローンが作れるようになりました。あとはログイン制御とかして、良い感じに UI を整えたら良さそうです。Agora 簡単だし無料枠もなかなかあるので、別のアプリに組み込んでもおもしろいかも。映像の方も。
+
+君だけの最強の Clubhouse を作ろう！
 
 ### 参考
 
