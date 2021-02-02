@@ -1,23 +1,23 @@
 ---
-title: "Clubhouse のウェブ版っぽいのを Agora で作る"
+title: "Agora で偽 Clubhouse を作る"
 emoji: "🍣"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["agora", "voiceChat", "streaming"]
 published: false
 ---
 
-Clubhouse に招待されないので作ってみた、的なタイトルにしようかと思ったんだけど釣りっぽいかなと思ってやめました。作れてないし……。
+Clubhouse に招待されないので自分で作ってみた、みたいな感じです。まあ別に招待してくれなくていいんですけどね、大して興味ないしそれにほらどうせ Android 使ってるしね。あのぶどうは酸っぱいや^[[すっぱい葡萄 - Wikipedia](https://ja.wikipedia.org/wiki/%E3%81%99%E3%81%A3%E3%81%B1%E3%81%84%E8%91%A1%E8%90%84)]。
+
+頑張って調べて書いてる感じなので何かあれば PR とかお願いします。
 
 ## 先にまとめ
 
--  Agora.io Real-Time Voice and Video Engagement - Agora.io
+- Clubhouse は Agora を使っているらしい
+- Agora - Real-Time Voice and Video Engagement
    -  https://www.agora.io/en/
 - 無料枠は音声 10,000 時間/月
 - 公式チュートリアル：[Start a Voice Call](https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#5-leave-the-channel)
-- デモ：[ginpei/try-agora](https://github.com/ginpei/try-agora)
-  - ngrok 用意してるのでお友達と遊べます
-- デモはクライアント側で完結
-- 本番ならトークン生成をサーバー側で行う必要がある
+- 今回作ったデモ：[ginpei/try-agora](https://github.com/ginpei/try-agora)
 
 ![](https://storage.googleapis.com/zenn-user-upload/ssyjh3kx1rbq4i7bjdsczgpw162w)
 *デモのスクリーンショット。開始ボタンや参加者の ID 一覧など*
@@ -32,16 +32,19 @@ Clubhouse に招待されないので作ってみた、的なタイトルにし�
 
 そして噂の Clubhouse はこれを使って運営されているらしい。
 
-- [Clubhouse リアルタイム配信の仕組みについて](https://zenn.dev/voluntas/scraps/9403b803320d6f)
+https://zenn.dev/voluntas/scraps/9403b803320d6f
 
 > - 利用しているリアルタイム配信サービスは Agora.io
+>   - DNS 見ただけ
+>   - ap-japan.agora.io が見えた
 
 ## デモを試す
 
-これから作り方を紹介するんだけど、できあがりは GitHub で公開しています。`public/main.js` の `main()` から諸々見てみてください。（ライブデモはありませんすみません。）
+これから作り方を紹介するんだけど、できあがりは GitHub で公開しています。（ライブデモはありませんすみません。）
 
 - [ginpei/try-agora](https://github.com/ginpei/try-agora)
   - 実装は `public/main.js` の `main()` から
+  - 本質的でない UI 操作とかの実装は `ui.js`
 
 試すには `git clone` の後 `public/secrets.example.js` を `public/secrets.js` へ複製し、設定をしてください。Agora のアカウント等が必要になります。
 
@@ -114,10 +117,10 @@ const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 
 - join - チャンネル参加
 - leave - チャンネル離脱
-- publish - 音声送信開始
-- unpublish - 音声送信終了
+- publish - 音声送信開始（アンミュート）
+- unpublish - 音声送信終了（ミュート）
 
-Agora からの通知は `client.on()` で監視できます。
+Agora からの通知は `client.on()` で監視できます。以下のイベントを利用します。
 
 - `user-joined` - 誰か join した
 - `user-left` - 誰か leave した
@@ -152,26 +155,28 @@ async function onJoinClick() {
 
 :::details 値の探し方
 - `appId` - "App ID" のやつ
-- `channel` - これはお好きに
-- `token` - `channel` などを元に生成されるもの。通常はプロジェクト作成時に Secure mode を選択するので実質必須
+- `channel` - これはお好きに。空白や記号も使える様子（`join()` API の仕様を参照）
+- `token` - `channel` などを元に生成されるもの
   - [Project Management](https://console.agora.io/projects) > Edit > Features > Generate temp token で生成
+  - 通常はプロジェクト作成時に Secure mode を選択するので実質必須
 - `uid` - 自動生成させるので `null`
 
-トークン生成の際は利用するチャンネル名 `demo_channel_name` を入力してください。これが食い違うと CAN_NOT_GET_GATEWAY_SERVER エラーになります。
+トークン生成の際は利用するチャンネル名 `demo_channel_name` を正確に入力してください。これが食い違うと CAN_NOT_GET_GATEWAY_SERVER エラーになります。
 
 ![](https://storage.googleapis.com/zenn-user-upload/482yx81mhogijn2so7drxray8tmm)
 *Generate temp token の様子。チャンネル名を入力する。*
 
-デモではコンソールから生成できたけど、本番では `token` は自力で生成します。秘密の情報 App certificate を用る必要があるためコードが露出するクライアント側では行えません。サーバー側かサーバーレスなやつでやろう。
+なお `token` は、デモではコンソールから生成できたけど本番では自力で生成します。秘密の情報 App certificate を用いる必要があるためです。コードが露出するクライアント側では行えません。サーバー側かサーバーレスなやつでやろう。
 
-- [Generate a Token](https://docs.agora.io/en/Interactive%20Broadcast/token_server)
-- [Tools/RtcTokenBuilderSample.js at master · AgoraIO/Tools](https://github.com/AgoraIO/Tools/blob/master/DynamicKey/AgoraDynamicKey/nodejs/sample/RtcTokenBuilderSample.js)
+- [Generate a Token](https://docs.agora.io/en/Voice/token_server?platform=All%20Platforms)
+  - いきなり C++ のコードが出てくるけど爽やかにスルーして Node.js を探してください
+- 公式サンプル：[Tools/RtcTokenBuilderSample.js at master · AgoraIO/Tools](https://github.com/AgoraIO/Tools/blob/master/DynamicKey/AgoraDynamicKey/nodejs/sample/RtcTokenBuilderSample.js)
 - App certificate と App Secret は同じものを指す様子
 :::
 
 ### チャンネル離脱
 
-`localAudioTrack` は後程 publish 時に生成します。
+`client.localAudioTrack` は配列で、後の publish 時に増えます。
 
 ```js
 async function onLeaveClick() {
@@ -188,7 +193,7 @@ async function onLeaveClick() {
 
 音声のトラックは次の `onPublishClick()` で作成します。
 
-[離脱時にこの音声のトラックを閉じるのは必須](https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#5-leave-the-channel)とのこと。（でも代わりに `client.unpublish()` でも良さそう？）
+[離脱時にこの音声のトラックを閉じるのは必須](https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#5-leave-the-channel)とのこと。（でも代わりに `client.unpublish()` でも良さそう？）（しなかったらどうなるんだろう？）（API の説明に記載がない？）
 
 > Destroying the local media tracks is mandatory. You can follow your own implementation preferences.
 
@@ -220,7 +225,7 @@ async function onUnpublishClick() {
 
 - [unpublish(tracks?: ILocalTrack | ILocalTrack[]): Promise<void>](https://docs.agora.io/en/Voice/API%20Reference/web_ng/interfaces/iagorartcclient.html#unpublish)
 
-ちなみに音声トラックは `publish()` で複数登録できて、`unpublish()` では引数で指定して任意のものを閉じることができるようです。また省略すると全て閉じるとのこと。`leave()` との関係はどんな感じなんだろ？
+ちなみに音声トラックは `publish()` で複数登録できて、`unpublish()` の引数で指定して任意のものを閉じることができるようです。また省略すると全て閉じるとのこと。`leave()` との関係はどんな感じなんだろ？
 
 まあともかくこれで自身の操作はできるようになりました。ここからは他の人の音声を取得してゆきます。
 
@@ -265,7 +270,7 @@ async function onAgoraUserLeft(user, reason) {
 - `"ServerTimeOut"` - オフラインになった
 - `"BecomeAudience"` - *role* が audience になった
 
-*role* は本稿では扱っていません。（ごめんなさい、初めて使ってます。）
+[*role*](https://docs.agora.io/en/Voice/API%20Reference/web_ng/globals.html#clientrole) は本稿では扱っていません。（ごめんなさい、初めて使ってます。）
 
 ### 誰か publish した
 
@@ -317,7 +322,7 @@ async function onAgoraUserUnpublished(user, mediaType) {
 > AgoraRTCException
 > AgoraRTCError CAN_NOT_GET_GATEWAY_SERVER: dynamic use static key
 
-→ `token` を `null` にせず、文字列を与える。ドキュメントには optional とあるが実質必須。
+→ `token` を `null` にせず、文字列を与える。ドキュメントには `string | null` とあるが実質必須。
 
 > AgoraRTCError INVALID_PARAMS: Invalid token: . If you don not use token, set it to null
 
@@ -364,3 +369,4 @@ async function onAgoraUserUnpublished(user, mediaType) {
 - [Clubhouse リアルタイム配信の仕組みについて](https://zenn.dev/voluntas/scraps/9403b803320d6f)
 - [Clubhouseも使っているらしいAgoraを使って簡単にビデオ通話](https://zenn.dev/arahabica/articles/0f54f2cdb1a29d)
 
+[^1]: https://ja.wikipedia.org/wiki/%E3%81%99%E3%81%A3%E3%81%B1%E3%81%84%E8%91%A1%E8%90%84
