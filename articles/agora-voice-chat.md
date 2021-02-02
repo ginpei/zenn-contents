@@ -1,5 +1,5 @@
 ---
-title: "Agora で偽 Clubhouse を作る"
+title: "Agora で君だけの最強の Clubhouse を作ろう"
 emoji: "🍣"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["agora", "webrtc", "javascript"]
