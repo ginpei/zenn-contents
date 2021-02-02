@@ -3,7 +3,7 @@ title: "Agora で偽 Clubhouse を作る"
 emoji: "🍣"
 type: "tech" # tech: 技術記事 / idea: アイデア
 topics: ["agora", "webrtc", "javascript"]
-published: false
+published: true
 ---
 
 **Clubhouse に招待されないので自分で作ってみた**、みたいな感じです。まあ別に招待してくれなくていいんですけどね、大して興味ないしそのうちオープンになるだろうしそれにほらどうせ Android 使ってるしあのぶどうは酸っぱいし^[[すっぱい葡萄 - Wikipedia](https://ja.wikipedia.org/wiki/%E3%81%99%E3%81%A3%E3%81%B1%E3%81%84%E8%91%A1%E8%90%84)]。
