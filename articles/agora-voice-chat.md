@@ -15,7 +15,8 @@ published: true
 - Clubhouse は Agora を使っているらしい
 - Agora - Real-Time Voice and Video Engagement
    -  https://www.agora.io/en/
-- 無料枠は音声 ~~10,000 時間/月~~ 10,000 分/月
+- 無料枠は音声 10,000 分/月
+  - （誤って『10,000 時間/月』と記載してました。分です。すみませんでした。）
 - 公式チュートリアル：[Start a Voice Call](https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#5-leave-the-channel)
 - 今回作ったデモ：[ginpei/try-agora](https://github.com/ginpei/try-agora)
 
