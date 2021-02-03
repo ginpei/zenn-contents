@@ -19,6 +19,9 @@ published: true
 - 公式チュートリアル：[Start a Voice Call](https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#5-leave-the-channel)
 - 今回作ったデモ：[ginpei/try-agora](https://github.com/ginpei/try-agora)
 
+![](https://storage.googleapis.com/zenn-user-upload/jyl8xt5kufepxa47jn7vlt5y858e)
+*毎月 10,000 分無料とのこと。[価格のページより](https://www.agora.io/en/pricing/)。*
+
 ![](https://storage.googleapis.com/zenn-user-upload/ssyjh3kx1rbq4i7bjdsczgpw162w)
 *デモのスクリーンショット。開始ボタンや参加者の ID 一覧など*
 
