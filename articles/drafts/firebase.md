@@ -1,0 +1,5 @@
+- Firebaseのdevプロジェクトへ切り替えできなかった → `npx firebase use` で確認。`.firebaserc` 編集。GitHub変数を一度削除、`npx firebase init hosting:github` で再度生成、合わせてGH Actionsのスクリプト中の変数名を更新
+- Hosting 以外デプロイされなかった → 手動で `npx firebase deploy` する
+- Functions のデプロイに失敗 → 指示に従い Blaze プランへ
+- Blaze プランにしてもだめ？ → クレジットカード情報の登録後、改めてプラン変更ボタンを
+- Functions のビルドに失敗 → Firebase プロジェクト切り替え後に変数設定してなかった。`npx firebase functions:config:set KEY=VALUE`
