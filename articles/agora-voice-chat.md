@@ -199,11 +199,11 @@ async function onLeaveClick() {
 
 音声のトラックは次の `onPublishClick()` で作成します。
 
-[離脱時にこの音声のトラックを閉じるのは必須](https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#5-leave-the-channel)とのこと。（でも代わりに `client.unpublish()` でも良さそう？）（しなかったらどうなるんだろう？）（API の説明に記載がない？）
+[離脱時にこの音声のトラックを閉じるのは必須](https://docs.agora.io/en/Voice/start_call_audio_web_ng?platform=Web#5-leave-the-channel)とのこと。API の説明には特に記載がないけど、ちゃんと閉じないと何かが残るみたいで（実装未確認)、例えば Chrome がタブに表示する録音中マークが付いたままになったりしました。（`client.unpublish()` はしなくて良いのかな？）
 
 > Destroying the local media tracks is mandatory. You can follow your own implementation preferences.
 
-これで参加と離脱ができるようになりました。聞き専ならこれで終わり。
+それはさておき、これで参加と離脱ができるようになりました。聞き専ならこれで終わり。
 
 ### 音声送信開始
 
@@ -232,6 +232,8 @@ async function onUnpublishClick() {
 - [unpublish(tracks?: ILocalTrack | ILocalTrack[]): Promise<void>](https://docs.agora.io/en/Voice/API%20Reference/web_ng/interfaces/iagorartcclient.html#unpublish)
 
 ちなみに音声トラックは `publish()` で複数登録できて、`unpublish()` の引数で指定して任意のものを閉じることができるようです。また省略すると全て閉じるとのこと。`leave()` との関係はどんな感じなんだろ？
+
+よくわかんないけどこのタイミングで `client.localTracks.forEach((v) => v.close())` 呼んだ方が良いのかな。
 
 まあともかくこれで自身の操作はできるようになりました。ここからは他の人の音声を取得していきます。
 
@@ -363,6 +365,18 @@ async function onAgoraUserUnpublished(user, mediaType) {
 → 要素が存在することを確認する。
 
 ドキュメントでは `document.getElementById(user.uid)` の結果の要素を削除しろと言うんだけど、ドキュメント探してもそんなものは作られていないんだよなあ。
+
+### 録音中マークが消えない
+
+<!-- TODO 画像 -->
+
+→ 確実に `client.localTracks.forEach((v) => v.close())` を実行する。たしかに必須だった。
+
+### ログ出力が多すぎる
+
+とりあえず DevTools コンソールのフィルタリングで `-[INFO] -[DEBUG]` あたり置いておけば消えます。
+
+<!-- TODO 本番用ビルドについて調べる -->
 
 ## おしまい
 
